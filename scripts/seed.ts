@@ -62,6 +62,52 @@ async function main() {
   }
   console.log('Industrial categories seeded successfully.');
 
+  // 3. Seed Sample Industrial Products
+  const laserCategory = await prisma.category.findUnique({ where: { slug: 'cnc-laser-cutting' } });
+  const hardwareCategory = await prisma.category.findUnique({ where: { slug: 'hardware-components' } });
+
+  if (laserCategory && hardwareCategory) {
+    const productsData = [
+      {
+        name: 'Laser Cut SS304 Mounting Bracket',
+        slug: 'laser-cut-ss304-mounting-bracket',
+        description: 'Custom laser cut Stainless Steel 304 mounting bracket, 3mm thickness with countersunk holes.',
+        price: 249.00,
+        unit: 'piece',
+        sku: 'MSB-SS304-03MM',
+        materialGrade: 'SS304',
+        thicknessMm: 3.0,
+        dimensions: '150x100x3 mm',
+        weightKg: 0.35,
+        finishType: 'Raw Brushed',
+        categoryId: laserCategory.id,
+      },
+      {
+        name: 'Heavy Duty Structural L-Angle Bracket',
+        slug: 'heavy-duty-structural-l-angle-bracket',
+        description: 'Mild Steel powder-coated L-angle bracket for industrial frame support.',
+        price: 189.00,
+        unit: 'piece',
+        sku: 'HW-LAB-MS-05MM',
+        materialGrade: 'MS Grade A',
+        thicknessMm: 5.0,
+        dimensions: '100x100x50 mm',
+        weightKg: 0.60,
+        finishType: 'Black Powder Coated',
+        categoryId: hardwareCategory.id,
+      },
+    ];
+
+    for (const prod of productsData) {
+      await prisma.product.upsert({
+        where: { slug: prod.slug },
+        update: { price: prod.price, description: prod.description },
+        create: prod,
+      });
+    }
+    console.log('Sample industrial products seeded successfully.');
+  }
+
   console.log('Database seeding process completed.');
 }
 
