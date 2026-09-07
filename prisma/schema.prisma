@@ -91,6 +91,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   cart                Cart?
   wishlist            WishlistItem[]
+  orders              Order[]
 
   @@map("users")
 }
@@ -111,6 +112,7 @@ model Address {
   longitude   Float?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  orders      Order[]
 
   @@index([userId])
   @@map("addresses")
@@ -190,6 +192,7 @@ model Product {
   images           ProductImage[]
   cartItems        CartItem[]
   wishlistItems    WishlistItem[]
+  orderItems       OrderItem[]
 
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
@@ -253,4 +256,74 @@ model WishlistItem {
   @@index([userId])
   @@index([productId])
   @@map("wishlist_items")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id])
+  addressId       String?
+  address         Address?      @relation(fields: [addressId], references: [id])
+
+  guestEmail      String?
+  guestName       String?
+  guestPhone      String?
+
+  shippingName    String?
+  shippingPhone   String?
+  shippingLine1   String?
+  shippingLine2   String?
+  shippingCity    String?
+  shippingState   String?
+  shippingPincode String?
+
+  items           OrderItem[]
+  status          OrderStatus   @default(PENDING)
+  subtotal        Decimal       @db.Decimal(10, 2)
+  discount        Decimal       @default(0) @db.Decimal(10, 2)
+  shippingCost    Decimal       @default(0) @db.Decimal(10, 2)
+  tax             Decimal       @default(0) @db.Decimal(10, 2)
+  total           Decimal       @db.Decimal(10, 2)
+  notes           String?
+  
+  trackingNumber  String?
+  awbNumber       String?
+  courierName     String?
+  courierService  String?
+  shippingCharge  Float?
+  pickupScheduled Boolean       @default(false)
+  pickupDate      DateTime?
+  shippingStatus  String?
+  packingSlipUrl  String?
+  
+  paymentMethod   PaymentMethod?
+  paymentStatus   PaymentStatus @default(PENDING)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id                    String   @id @default(uuid())
+  orderId               String
+  order                 Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId             String
+  product               Product  @relation(fields: [productId], references: [id])
+  quantity              Int
+  price                 Decimal  @db.Decimal(10, 2)
+  total                 Decimal  @db.Decimal(10, 2)
+  productName           String
+  productUnit           String
+  customizationText     String?
+  customizationImageUrl String?
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
 }
