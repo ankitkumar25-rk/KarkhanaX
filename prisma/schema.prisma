@@ -55,6 +55,20 @@ enum OrderType {
   SERVICE_ORDER
 }
 
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 // ================================
 // USER & AUTH
 // ================================
