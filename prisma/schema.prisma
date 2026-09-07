@@ -94,6 +94,7 @@ model User {
   orders              Order[]
   serviceOrders       ServiceOrder[]
   payments            Payment[]
+  returns             Return[]
 
   @@map("users")
 }
@@ -301,6 +302,7 @@ model Order {
   
   paymentMethod   PaymentMethod?
   paymentStatus   PaymentStatus @default(PENDING)
+  returns         Return[]
   
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -325,6 +327,7 @@ model OrderItem {
   productUnit           String
   customizationText     String?
   customizationImageUrl String?
+  returns               ReturnItem[]
 
   @@index([orderId])
   @@index([productId])
@@ -387,4 +390,38 @@ model Payment {
   @@index([internalOrderId])
   @@index([status])
   @@map("payments")
+}
+
+model Return {
+  id              String       @id @default(uuid())
+  orderId         String
+  order           Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  reason          String
+  status          ReturnStatus @default(PENDING)
+  refundAmount    Decimal?     @db.Decimal(10, 2)
+  adminNotes      String?
+  items           ReturnItem[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@map("returns")
+}
+
+model ReturnItem {
+  id              String    @id @default(uuid())
+  returnId        String
+  return          Return    @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  orderItemId     String
+  orderItem       OrderItem @relation(fields: [orderItemId], references: [id])
+  quantity        Int
+  reason          String?
+
+  @@index([returnId])
+  @@index([orderItemId])
+  @@map("return_items")
 }
