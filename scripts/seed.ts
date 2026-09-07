@@ -29,6 +29,39 @@ async function main() {
     console.log(`Admin user already exists: ${existingAdmin.email}`);
   }
 
+  // 2. Seed Industrial Categories
+  const categoriesData = [
+    {
+      name: 'CNC Laser Cutting',
+      slug: 'cnc-laser-cutting',
+      description: 'High precision fiber laser cutting for sheet metal, SS, MS, and aluminum plates.',
+    },
+    {
+      name: 'Sheet Metal Bending',
+      slug: 'sheet-metal-bending',
+      description: 'CNC press brake bending and custom plate forming services.',
+    },
+    {
+      name: 'Industrial Powder Coating',
+      slug: 'industrial-powder-coating',
+      description: 'In-house electrostatic powder coating plant for durable surface finishing.',
+    },
+    {
+      name: 'Hardware Components',
+      slug: 'hardware-components',
+      description: 'Standard industrial fasteners, brackets, hinges, and structural hardware.',
+    },
+  ];
+
+  for (const cat of categoriesData) {
+    await prisma.category.upsert({
+      where: { slug: cat.slug },
+      update: { name: cat.name, description: cat.description },
+      create: cat,
+    });
+  }
+  console.log('Industrial categories seeded successfully.');
+
   console.log('Database seeding process completed.');
 }
 
