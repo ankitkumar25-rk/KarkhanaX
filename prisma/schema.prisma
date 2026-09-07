@@ -9,3 +9,33 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// ================================
+// ENUMS
+// ================================
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+// ================================
+// USER & AUTH
+// ================================
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  name            String
+  phone           String?
+  passwordHash    String?
+  role            Role      @default(CUSTOMER)
+  isVerified      Boolean   @default(false)
+  avatarUrl       String?
+  googleId        String?   @unique
+  isBanned        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("users")
+}
