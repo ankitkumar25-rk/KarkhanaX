@@ -153,10 +153,45 @@ model Category {
   parentId    String?
   parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
   @@index([slug])
   @@index([parentId])
   @@map("categories")
+}
+
+model Product {
+  id               String       @id @default(uuid())
+  name             String
+  slug             String       @unique
+  description      String
+  price            Decimal      @db.Decimal(10, 2)
+  compareAtPrice   Decimal?     @db.Decimal(10, 2)
+  costPrice        Decimal?     @db.Decimal(10, 2)
+  stockQuantity    Int          @default(0)
+  unit             String       @default("piece")
+  sku              String?      @unique
+  barcode          String?
+  isFeatured       Boolean      @default(false)
+  isActive         Boolean      @default(true)
+  
+  materialGrade    String?
+  thicknessMm      Float?
+  dimensions       String?
+  weightKg         Float?
+  finishType       String?
+  
+  categoryId       String
+  category         Category     @relation(fields: [categoryId], references: [id])
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@map("products")
 }
