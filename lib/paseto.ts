@@ -61,7 +61,7 @@ export async function generateAccessToken(user: UserPayload): Promise<string> {
 }
 
 /**
- * Generates a Refresh Token for session renewal (30 days expiration).
+ * Generates a Refresh Token for session renewal (15 days expiration).
  */
 export async function generateRefreshToken(user: UserPayload): Promise<string> {
   const payload = {
@@ -69,5 +69,5 @@ export async function generateRefreshToken(user: UserPayload): Promise<string> {
     type: 'refresh',
   };
 
-  return createPasetoToken(payload, '30d');
+  return createPasetoToken(payload, '15d');
 }
