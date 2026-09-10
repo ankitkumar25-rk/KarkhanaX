@@ -1,9 +1,9 @@
-import { V4 } from 'paseto';
+import { V3 } from 'paseto';
 import crypto from 'node:crypto';
 import { env } from './env';
 import type { PasetoPayload, UserPayload } from '@/types/auth';
 
-// 32-byte symmetric key for PASETO v4 local encryption
+// 32-byte symmetric key for PASETO v3 local encryption
 const getSymmetricKey = (): crypto.KeyObject => {
   const secretHex = env.PASETO_SECRET_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
   const keyBuffer = Buffer.from(secretHex, 'hex');
@@ -18,7 +18,7 @@ const getSymmetricKey = (): crypto.KeyObject => {
 const secretKeyObject = getSymmetricKey();
 
 /**
- * Encrypts payload into a PASETO v4 local token with expiration.
+ * Encrypts payload into a PASETO v3 local token with expiration.
  */
 export async function createPasetoToken(
   payload: Record<string, unknown>,
@@ -30,11 +30,11 @@ export async function createPasetoToken(
     expiresIn,
   };
 
-  return await V4.encrypt(payload, secretKeyObject, options);
+  return await V3.encrypt(payload, secretKeyObject, options);
 }
 
 /**
- * Decrypts and verifies a PASETO v4 local token.
+ * Decrypts and verifies a PASETO v3 local token.
  */
 export async function verifyPasetoToken<T = PasetoPayload>(token: string): Promise<T> {
   const options = {
@@ -42,7 +42,7 @@ export async function verifyPasetoToken<T = PasetoPayload>(token: string): Promi
     audience: env.PASETO_AUDIENCE || 'karkhanax-app',
   };
 
-  const payload = await V4.decrypt(token, secretKeyObject, options);
+  const payload = await V3.decrypt(token, secretKeyObject, options);
   return payload as unknown as T;
 }
 

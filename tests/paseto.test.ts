@@ -23,7 +23,7 @@ describe('PASETO & RBAC Unit Test Suite', () => {
   it('should generate and decrypt a valid PASETO access token', async () => {
     const token = await generateAccessToken(sampleUser);
     expect(typeof token).toBe('string');
-    expect(token.startsWith('v4.public.') || token.startsWith('v4.local.')).toBe(true);
+    expect(token.startsWith('v3.local.') || token.startsWith('v4.local.')).toBe(true);
 
     const decoded = await verifyPasetoToken<{ sub: string; email: string; role: string }>(token);
     expect(decoded.sub).toBe(sampleUser.id);
